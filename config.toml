@@ -1,0 +1,15 @@
+baseurl = "https://www.weber-inter.net"
+title = "Otherland"
+description = "Where dreams start living..."
+theme = "hyde-x"
+paginate = 10
+
+[author]
+  name = "Otherland"
+
+[taxonomies]
+  category = "categories"
+
+[params]
+  highlight = "solarized-dark"
+  tagline = "Where dreams start living..."
