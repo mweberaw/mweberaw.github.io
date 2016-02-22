@@ -1,3 +1,4 @@
-script:
-  - hugo
-  - rsync public/ /usr/share/nginx/html/
+hugo:
+  script:
+    - hugo
+    - rsync public/ /usr/share/nginx/html/
