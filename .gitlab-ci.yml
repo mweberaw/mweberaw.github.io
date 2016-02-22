@@ -1,4 +1,4 @@
 hugo:
   script:
     - hugo
-    - rsync public/ /usr/share/nginx/html/
+    - rsync -rv public/ /usr/share/nginx/html/
