@@ -11,5 +11,5 @@ paginate = 10
   category = "categories"
 
 [params]
-  highlight = "solarized-dark"
+  highlight = "solarized_dark"
   tagline = "Where dreams start living..."
