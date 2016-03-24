@@ -13,3 +13,5 @@ paginate = 10
 [params]
   highlight = "solarized_dark"
   tagline = "Where dreams start living..."
+
+  twitter = "https://twitter.com/mweberkl"
