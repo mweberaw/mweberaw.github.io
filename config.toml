@@ -1,7 +1,7 @@
 baseurl = "https://www.weber-inter.net"
 title = "Otherland"
 description = "Where dreams start living..."
-theme = "hyde-x"
+theme = "m10c"
 paginate = 10
 
 [author]
