@@ -11,7 +11,8 @@ paginate = 10
   category = "categories"
 
 [params]
-  highlight = "solarized_dark"
-  tagline = "Where dreams start living..."
+  description = "Where dreams start living..."
 
-  twitter = "https://twitter.com/mweberkl"
+  [[params.social]]
+    name = "twitter"
+    url = "https://twitter.com/mweberkl"
