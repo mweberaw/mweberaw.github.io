@@ -1,5 +1,0 @@
-hugo:
-  script:
-    - git submodule update --init
-    - hugo
-    - rsync -rv public/ /usr/share/nginx/html/
