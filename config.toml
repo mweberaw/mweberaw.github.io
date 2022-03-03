@@ -10,6 +10,13 @@ paginate = 10
 [taxonomies]
   category = "categories"
 
+[menu]
+[[menu.main]]
+  identifier = 'Home'
+  name = 'Home'
+  url = '/'
+  weight = -110
+
 [params]
   description = "Where dreams start living..."
 
