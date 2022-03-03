@@ -1,0 +1,71 @@
+<!doctype html><html lang=en-us>
+<head>
+<title>SCM-Manager behind a proxy (NGINX) // Otherland</title>
+<link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.92.2">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="John Doe">
+<meta name=description content>
+<link rel=stylesheet href=https://www.weber-inter.net/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="SCM-Manager behind a proxy (NGINX)">
+<meta name=twitter:description content="When configuring my vserver, I came upon a problem of configuring a subdomain for SCM-Manager.
+My plan was to run an instance of SCM-Manager to manage git and mercurial repositories. Mostly to have a simple web interface and secondly to test the system for suitability in a production environment. The plan was to have a separate subdomain for all kinds of version control systems, in my case scm.weber-inter.net.
+Since I had already configured an instance of NGINX, I added a proxy instance for my subdomain proxying requests to the preconfigured SCM-Manager server.">
+<meta property="og:title" content="SCM-Manager behind a proxy (NGINX)">
+<meta property="og:description" content="When configuring my vserver, I came upon a problem of configuring a subdomain for SCM-Manager.
+My plan was to run an instance of SCM-Manager to manage git and mercurial repositories. Mostly to have a simple web interface and secondly to test the system for suitability in a production environment. The plan was to have a separate subdomain for all kinds of version control systems, in my case scm.weber-inter.net.
+Since I had already configured an instance of NGINX, I added a proxy instance for my subdomain proxying requests to the preconfigured SCM-Manager server.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.weber-inter.net/post/2013-08-27-scm-manager-behind-a-proxy-nginx/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2013-08-27T00:00:00+00:00">
+<meta property="article:modified_time" content="2013-08-27T00:00:00+00:00">
+</head>
+<body>
+<header class=app-header>
+<a href=https://www.weber-inter.net><img class=app-header-avatar src=/avatar.jpg alt="John Doe"></a>
+<h1>Otherland</h1>
+<nav class=app-header-menu>
+<a class=app-header-menu-item href=/impressum/>Impressum</a>
+</nav>
+<p>Where dreams start living...</p>
+<div class=app-header-social>
+<a target=_blank href=https://twitter.com/mweberkl rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter"><title>twitter</title><path d="M23 3a10.9 10.9.0 01-3.14 1.53 4.48 4.48.0 00-7.86 3v1A10.66 10.66.0 013 4s-4 9 5 13a11.64 11.64.0 01-7 2c9 5 20 0 20-11.5a4.5 4.5.0 00-.08-.83A7.72 7.72.0 0023 3z"/></svg></a>
+</div>
+</header>
+<main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>SCM-Manager behind a proxy (NGINX)</h1>
+<div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Aug 27, 2013
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+2 min read
+</div>
+</div>
+</header>
+<div class=post-content>
+<p>When configuring my vserver, I came upon a problem of configuring a subdomain for SCM-Manager.</p>
+<p>My plan was to run an instance of SCM-Manager to manage git and mercurial repositories. Mostly to have a simple web interface and secondly to test the system for suitability in a production environment. The plan was to have a separate subdomain for all kinds of version control systems, in my case scm.weber-inter.net.</p>
+<p>Since I had already configured an instance of NGINX, I added a proxy instance for my subdomain proxying requests to the preconfigured SCM-Manager server. The server ran on port 8085 on localhost, so no access from the outside was possible. The access path for the web application is /scm by default. So the proxy entry in the NGINX configuration looked like this:</p>
+<pre tabindex=0><code>location / {
+  proxy_pass http://127.0.0.1:8085/scm/;
+  proxy_buffering off;
+  proxy_set_header Host $host;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto https;
+}
+</code></pre><p>The behavior of SCM-Manager was very strange. I could open the page and it showed a login screen as normal. I could login with the default scmadmin:scmadmin credentials. But when the dashboard showed up, the system told me that the session was expired. Other descriptions suggested that the proxy configuration was wrong. But the NGINX configuration was not the problem.</p>
+<p>The strange behavior comes from the fact that the cookie that is sent by SCM-Manager includes a path directive. This directive restricts the validity of the cookie to the path /scm, which is correct for the default server when exposed to the outside. The problem in my case was, that proxyed instance was running on the root of the subdomain, so the cookie was invalid for scm.weber-inter.net/.</p>
+<p>The solution at the moment is to configure a Jetty of Tomcat instance with the SCM-Manager application instance running on the root path. Then forwarding of the proxy directly goes to http://127.0.0.1:8085/ and the returned cookie is valid.</p>
+</div>
+<div class=post-footer>
+</div>
+</article>
+</main>
+</body>
+</html>

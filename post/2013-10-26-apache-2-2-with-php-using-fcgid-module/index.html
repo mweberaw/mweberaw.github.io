@@ -1,0 +1,86 @@
+<!doctype html><html lang=en-us>
+<head>
+<title>Apache 2.2 with PHP using FCGID module // Otherland</title>
+<link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.92.2">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="John Doe">
+<meta name=description content>
+<link rel=stylesheet href=https://www.weber-inter.net/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Apache 2.2 with PHP using FCGID module">
+<meta name=twitter:description content="When using the Apachewebserver, you have multiple possibilities to integrate PHP.
+One is to use mod_php. This module integrates PHP directly into the server itself. PHP is started when the server starts and runs under the same user as the Apache server itself.
+An alternative configuration is to start a new PHP process for each request that serves a PHP script. This is know as CGI and is quite well supported by PHP and Apache alike.">
+<meta property="og:title" content="Apache 2.2 with PHP using FCGID module">
+<meta property="og:description" content="When using the Apachewebserver, you have multiple possibilities to integrate PHP.
+One is to use mod_php. This module integrates PHP directly into the server itself. PHP is started when the server starts and runs under the same user as the Apache server itself.
+An alternative configuration is to start a new PHP process for each request that serves a PHP script. This is know as CGI and is quite well supported by PHP and Apache alike.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.weber-inter.net/post/2013-10-26-apache-2-2-with-php-using-fcgid-module/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2013-10-26T00:00:00+00:00">
+<meta property="article:modified_time" content="2013-10-26T00:00:00+00:00">
+</head>
+<body>
+<header class=app-header>
+<a href=https://www.weber-inter.net><img class=app-header-avatar src=/avatar.jpg alt="John Doe"></a>
+<h1>Otherland</h1>
+<nav class=app-header-menu>
+<a class=app-header-menu-item href=/impressum/>Impressum</a>
+</nav>
+<p>Where dreams start living...</p>
+<div class=app-header-social>
+<a target=_blank href=https://twitter.com/mweberkl rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter"><title>twitter</title><path d="M23 3a10.9 10.9.0 01-3.14 1.53 4.48 4.48.0 00-7.86 3v1A10.66 10.66.0 013 4s-4 9 5 13a11.64 11.64.0 01-7 2c9 5 20 0 20-11.5a4.5 4.5.0 00-.08-.83A7.72 7.72.0 0023 3z"/></svg></a>
+</div>
+</header>
+<main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Apache 2.2 with PHP using FCGID module</h1>
+<div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Oct 26, 2013
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+3 min read
+</div>
+</div>
+</header>
+<div class=post-content>
+<p>When using the Apache webserver, you have multiple possibilities to integrate PHP.</p>
+<p>One is to use mod_php. This module integrates PHP directly into the server itself. PHP is started when the server starts and runs under the same user as the Apache server itself.</p>
+<p>An alternative configuration is to start a new PHP process for each request that serves a PHP script. This is know as CGI and is quite well supported by PHP and Apache alike. The problem in this scenario is that starting a PHP process per request means a lot of overhead. This slows down the overall performance. On the other hand, PHP can run as what ever user you like.</p>
+<p>A tradeoff between the before mentioned alternatives is FastCGI or also called FCGI. This module starts a PHP process for a specific number of requests. When these requests are processed, the PHP process is terminated and a new one is started. This method avoids most of the overhead of CGI and the PHP process can also be started as a different user. Additionally, the PHP process and the web server process are separated.</p>
+<p>The configuration of Apache for the PHP-FCGI method looks the following:</p>
+<p>First install the Apache module and the PHP-CGI module. Under Ubuntu Linux this can be done using apt:</p>
+<pre tabindex=0><code>apt-get install libapache2-mod-fcgid php5-cgi
+</code></pre><p>The PHP configuration (also known as php.ini) can be found under <code>/etc/php5/cgi/php.ini</code>. There you can adapt things like the maximum upload size. The next step is to configure Apache to use the PHP-CGI module.</p>
+<p>First check that the module is activated by running the command <code>a2enmod fcgid</code>. Edit the main Apache configuration file found under <code>/etc/apache2/apache2.conf</code>. Add the following lines to the configuration:</p>
+<pre tabindex=0><code>FcgidMaxRequestsPerProcess 10000
+AddHandler fcgid-script .php
+FcgidWrapper /usr/bin/php5-cgi
+</code></pre><p>The first line tells the FCGI-module the restart the PHP process after 10000 requests have been processed. The second line registers the FCGI-module to process file the ending <code>.php</code>. The last line tells the module which executable to use the start the PHP-process. The executable <code>php5-cgi</code> is installed by the package <code>php5-cgi</code> package we installed in the first step. Do not forget to restart the web server using <code>service apache2 restart</code>.</p>
+<p>The PHP-Apache configuration is complete. In the site configurations you have to add the option <code>ExecCGI</code>, if PHP scripts should be executed for this site. My configuration looks like this:</p>
+<pre tabindex=0><code>...
+DocumentRoot /data/www/www
+&lt;Directory /&gt;
+    Options Indexes FollowSymLinks MultiViews ExecCGI
+    AllowOverride All
+    Order allow,deny
+    allow from all
+&lt;/Directory&gt;
+...
+</code></pre><p>Test if the configuration is working by adding a PHP info file to the DocumentRoot:</p>
+<pre tabindex=0><code>&lt;?PHP
+phpinfo();
+?&gt;
+</code></pre><p>If the site loads forever, check if you added the <code>ExecCGI</code> option in the <code>Directory</code> section of your site configuration.</p>
+<p>Small remark at the end: This configuration does not start PHP as a different user. For this task you can use the SuExec Apache module.</p>
+</div>
+<div class=post-footer>
+</div>
+</article>
+</main>
+</body>
+</html>

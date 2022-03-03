@@ -1,0 +1,60 @@
+<!doctype html><html lang=en-us>
+<head>
+<title>Multiple SSL Certificates on Same IP // Otherland</title>
+<link rel="shortcut icon" href=/favicon.ico>
+<meta charset=utf-8>
+<meta name=generator content="Hugo 0.92.2">
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=author content="John Doe">
+<meta name=description content>
+<link rel=stylesheet href=https://www.weber-inter.net/css/main.min.88e7083eff65effb7485b6e6f38d10afbec25093a6fac42d734ce9024d3defbd.css>
+<meta name=twitter:card content="summary">
+<meta name=twitter:title content="Multiple SSL Certificates on Same IP">
+<meta name=twitter:description content="The days where http was the standard for communication over the internet should be over. Most of the connections should be encrypted between the server and the client. In this case we are talking about SSL encryption between the web server and the browser.
+Most users that have their own VServer have a single IP. SSL certificates that work for multiple subdomains (wildcard certificates) are very expensive. The solution seams to be to have multiple certificates, one for each subdomain.">
+<meta property="og:title" content="Multiple SSL Certificates on Same IP">
+<meta property="og:description" content="The days where http was the standard for communication over the internet should be over. Most of the connections should be encrypted between the server and the client. In this case we are talking about SSL encryption between the web server and the browser.
+Most users that have their own VServer have a single IP. SSL certificates that work for multiple subdomains (wildcard certificates) are very expensive. The solution seams to be to have multiple certificates, one for each subdomain.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://www.weber-inter.net/post/2013-09-17-multiple-ssl-certificates-on-same-ip/"><meta property="article:section" content="post">
+<meta property="article:published_time" content="2013-09-17T00:00:00+00:00">
+<meta property="article:modified_time" content="2013-09-17T00:00:00+00:00">
+</head>
+<body>
+<header class=app-header>
+<a href=https://www.weber-inter.net><img class=app-header-avatar src=/avatar.jpg alt="John Doe"></a>
+<h1>Otherland</h1>
+<nav class=app-header-menu>
+<a class=app-header-menu-item href=/impressum/>Impressum</a>
+</nav>
+<p>Where dreams start living...</p>
+<div class=app-header-social>
+<a target=_blank href=https://twitter.com/mweberkl rel="noreferrer noopener"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-twitter"><title>twitter</title><path d="M23 3a10.9 10.9.0 01-3.14 1.53 4.48 4.48.0 00-7.86 3v1A10.66 10.66.0 013 4s-4 9 5 13a11.64 11.64.0 01-7 2c9 5 20 0 20-11.5a4.5 4.5.0 00-.08-.83A7.72 7.72.0 0023 3z"/></svg></a>
+</div>
+</header>
+<main class=app-container>
+<article class=post>
+<header class=post-header>
+<h1 class=post-title>Multiple SSL Certificates on Same IP</h1>
+<div class=post-meta>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-calendar"><title>calendar</title><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+Sep 17, 2013
+</div>
+<div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-clock"><title>clock</title><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+2 min read
+</div>
+</div>
+</header>
+<div class=post-content>
+<p>The days where http was the standard for communication over the internet should be over. Most of the connections should be encrypted between the server and the client. In this case we are talking about SSL encryption between the web server and the browser.</p>
+<p>Most users that have their own VServer have a single IP. SSL certificates that work for multiple subdomains (wildcard certificates) are very expensive. The solution seams to be to have multiple certificates, one for each subdomain. StartSSL offers these kind of certificates for free whereas wildcard certificates are still rather expensive. But there is a drawback in using one certificate per subdomain.</p>
+<p>Most modern web servers support a technology that is called SNI (Server Name Indication). This technology allows the server to distinguish between requests to different subdomains before starting the SSL encryption procedure. The problem with this technology is, that is has to be supported by all devices connecting to the server. Most modern web browsers support SNI, some older browsers and some smartphone apps do not.</p>
+<p>When using a client that does not support SNI, the server connects with a default certificate. This certificate is not always the right one for the requested domain. But since without SNI the encryption of the connection has to start before looking at the requested subdomain, the server can not choose the right certificate up front. This is why you get a warning telling you that the certificate is not valid for the requested domain.</p>
+<p>There is currently no known solution except for using multiple IPs (one for each subdomain) which is not feasible in most cases, and using wildcard certificates, which is quite expensive. Thankfully most modern software that supports SSL also supports SNI and most software that does not support SNI can be configured to accept this “wrong” certificate anyways.</p>
+</div>
+<div class=post-footer>
+</div>
+</article>
+</main>
+</body>
+</html>
